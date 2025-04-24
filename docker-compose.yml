@@ -18,24 +18,23 @@ services:
   store:
     build: ./store
     container_name: ms_store
-    ports:
-      - "8080:8080"
-      - "5858:5858"
-    environment:
-      - loglevel=none
-    links:
-      - "mongo:mongo"
+    depends_on:
+      - "mongo"
     volumes:
       - ./store:/src/app
     working_dir: /src/app
+    ports:
+      - "3004:3000"
+    
     command: npm run start
   users:
     build: ./users
     container_name: ms_user
-    
-    links:
-      - neo4j
+    depends_on:
+      - "mongo"
     volumes:
       - ./users:/src/app
     working_dir: /src/app
+    ports:
+      - "3006:3000"
     command: npm run start
