@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+
+  store:
+    build: ./store
+    container_name: ms_store
+    ports:
+      - "8080:8080"
+      - "5858:5858"
+    environment:
+      - loglevel=none
+    links:
+      - "mongo:mongo"
+    volumes:
+      - ./store:/src/app
+    working_dir: /src/app
+    command: npm run start
+  users:
+    build: ./users
+    container_name: ms_user
+    
+    links:
+      - neo4j
+    volumes:
+      - ./users:/src/app
+    working_dir: /src/app
+    command: npm run start
